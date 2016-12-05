@@ -21,8 +21,12 @@ module Fastlane
         UI.message "Updating Xcode project's PROVISIONING_PROFILE_SPECIFIER to \"#{options[:profile_name]}\" 🔧".green
         build_settings["PROVISIONING_PROFILE_SPECIFIER"] = options[:profile_name]
 
-        UI.message "Updating Xcode project's PROVISIONING_PROFILE to \"#{options[:profile_uuid]}\" 🔧".green
-        build_settings["PROVISIONING_PROFILE"] = options[:profile_uuid]
+        # This item is set as optional in the configuration values
+        # Since Xcode 8, this is no longer needed, you use PROVISIONING_PROFILE_SPECIFIER
+        if options[:profile_uuid]
+            UI.message "Updating Xcode project's PROVISIONING_PROFILE to \"#{options[:profile_uuid]}\" 🔧".green
+            build_settings["PROVISIONING_PROFILE"] = options[:profile_uuid]
+        end
 
         UI.message "Updating Xcode project's DEVELOPMENT_TEAM to \"#{options[:development_team]}\" 👯".green
         build_settings["DEVELOPMENT_TEAM"] = options[:development_team]
@@ -56,7 +60,7 @@ module Fastlane
             FastlaneCore::ConfigItem.new(key: :profile_uuid,
                                          env_name: "PROVISIONING_PROFILE",
                                          description: "Provisioning profile UUID to use for code signing",
-                                         default_value: "\"$(PROFILE_UUID)\""),
+                                         optional: true),
             FastlaneCore::ConfigItem.new(key: :development_team,
                                          env_name: "TEAM_ID",
                                          description: "Development team identifier",
